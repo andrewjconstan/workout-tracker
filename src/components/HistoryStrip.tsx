@@ -1,0 +1,32 @@
+import { formatShortDate } from '../lib/dates'
+import { formatSet, type HistorySession } from '../lib/history'
+import type { ExerciseKind } from '../lib/types'
+
+export default function HistoryStrip({
+  sessions,
+  kind,
+  highlightSet,
+}: {
+  sessions: HistorySession[]
+  kind: ExerciseKind
+  highlightSet?: number
+}) {
+  if (sessions.length === 0) return <p className="muted small">No previous sessions yet.</p>
+  return (
+    <ul className="strip">
+      {sessions.map((s) => (
+        <li key={s.workoutId}>
+          <span className="strip-date">{formatShortDate(s.date)}</span>
+          <span className={`badge ${s.location}`}>{s.location === 'office' ? 'Office' : 'Home'}</span>
+          <span className="strip-sets">
+            {s.sets.map((x) => (
+              <span key={x.setNumber} className={x.setNumber === highlightSet ? 'hl' : undefined}>
+                {formatSet(x, kind)}
+              </span>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
