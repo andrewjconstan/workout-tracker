@@ -117,8 +117,9 @@ button.link.danger { color: var(--danger); }
 .badge.kind { color: var(--muted); }
 
 .strip { list-style: none; margin: 6px 0; padding: 0; }
-.strip li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
+.strip li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
 .strip li:first-child { border-top: none; }
+.strip-note { flex-basis: 100%; font-size: 14px; padding: 4px 8px; border-left: 3px solid var(--accent); background: var(--hl); border-radius: 4px; white-space: pre-wrap; }
 .strip-date { min-width: 50px; font-weight: 600; font-size: 14px; }
 .strip-sets { display: flex; flex-wrap: wrap; gap: 4px 10px; font-variant-numeric: tabular-nums; }
 .strip-sets .hl { background: var(--hl); border-radius: 4px; padding: 0 4px; font-weight: 700; }

@@ -208,6 +208,7 @@ function SetEditor({
   }
 
   async function remove() {
+    if (!window.confirm('Delete this set?')) return
     const { error } = await supabase.from('sets').delete().eq('id', set.id)
     onError(error ? error.message : null)
     if (!error) onChanged()

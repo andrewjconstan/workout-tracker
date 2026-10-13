@@ -59,7 +59,7 @@ const sets = [
   mkSet('w-older', 'e-incline', 2, 30, 10, '2026-09-29'),
   mkSet('w-older', 'e-incline', 3, 30, 9, '2026-09-29'),
 ]
-const notes = []
+const notes = [{ id: 'n-1', workout_id: 'w-old', exercise_id: 'e-incline', note: 'Go slower on the way down' }]
 let failSetWrites = false
 let workoutSeq = 0
 
@@ -260,6 +260,7 @@ await step('start a home workout and see history for the first exercise', async 
   await page.getByText('Round 1 of 3').waitFor()
   await eventually(async () => (await weightInput().inputValue()) === '35', 'weight pre-filled with 35 from last session')
   await page.locator('.strip').getByText('35×10').first().waitFor()
+  await page.locator('.strip-note').getByText('Go slower on the way down').waitFor()
   await eventually(
     () => page.evaluate(() => document.activeElement?.getAttribute('inputmode') === 'numeric'),
     'cursor in the reps field when weight is pre-filled',
@@ -350,8 +351,25 @@ await step('exercise detail shows sessions and charts', async () => {
 
 await step('plan editor renders slots with location badges', async () => {
   await page.getByRole('link', { name: 'Plan' }).click()
+  await page.getByText('Push focus').first().waitFor()
+  assert.equal(await page.getByText('Superset 2').count(), 0, 'routines start collapsed')
+  await page.getByRole('button', { name: /Push focus/ }).click()
   await page.getByText('Superset 2').first().waitFor()
   await shot('09-plan')
+})
+
+await step('archiving a routine asks for confirmation', async () => {
+  let asked = ''
+  page.once('dialog', (d) => { asked = d.message(); void d.dismiss() })
+  await page.getByRole('button', { name: 'Archive', exact: true }).first().click()
+  await eventually(async () => asked.includes('Archive'), 'confirmation dialog shown')
+  assert.equal(routines.find((r) => r.id === 'r-mon').archived, false, 'routine not archived after cancel')
+})
+
+await step('load starter plan does nothing when routines exist', async () => {
+  await page.getByRole('link', { name: 'More' }).click()
+  await page.getByRole('button', { name: 'Load starter plan' }).click()
+  await page.getByText(/Nothing changed/).waitFor()
 })
 
 await step('no runtime errors in the browser', async () => {

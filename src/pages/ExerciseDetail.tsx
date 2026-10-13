@@ -86,6 +86,12 @@ export default function ExerciseDetail() {
 
   async function toggleArchive() {
     if (!exercise) return
+    if (
+      !exercise.archived &&
+      !window.confirm(`Archive ${exercise.name}? It will be hidden from pickers. Your history is kept and you can unarchive it later.`)
+    ) {
+      return
+    }
     const { error } = await supabase.from('exercises').update({ archived: !exercise.archived }).eq('id', exercise.id)
     if (error) setError(error.message)
     else void load()
