@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [ci-report, gh-pages]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Runs every check, writes the output to a report, and never stops early,
+      # so a single run shows all failures at once.
+      - name: Install, typecheck, test, build
+        run: |
+          set +e
+          R="$RUNNER_TEMP/report.txt"
+          : > "$R"
+          echo "branch: $GITHUB_REF_NAME  sha: $GITHUB_SHA" >> "$R"
+          echo "## install" >> "$R"
+          npm install --no-audit --no-fund >> "$R" 2>&1; echo "exit: $?" >> "$R"
+          echo "## typecheck" >> "$R"
+          npx tsc --noEmit >> "$R" 2>&1; TC=$?; echo "exit: $TC" >> "$R"
+          echo "## test" >> "$R"
+          npm test >> "$R" 2>&1; T=$?; echo "exit: $T" >> "$R"
+          echo "## build" >> "$R"
+          npm run build >> "$R" 2>&1; B=$?; echo "exit: $B" >> "$R"
+          echo "$TC $T $B" > "$RUNNER_TEMP/exit.txt"
+          cp package-lock.json "$RUNNER_TEMP/package-lock.json" 2>/dev/null || true
+
+      # Publishes the report (and the generated lockfile) to a throwaway branch
+      # so results can be read without opening the Actions UI.
+      - name: Publish report
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP"
+          mkdir pub
+          cp report.txt pub/
+          cp package-lock.json pub/ 2>/dev/null || true
+          cd pub
+          git init -q -b ci-report
+          git config user.name "ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add -A
+          git commit -qm "CI report for $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ci-report
+
+      - name: Fail if any check failed
+        run: |
+          read TC T B < "$RUNNER_TEMP/exit.txt"
+          [ "$TC" = 0 ] && [ "$T" = 0 ] && [ "$B" = 0 ]
