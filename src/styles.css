@@ -100,6 +100,7 @@ button.big { padding: 16px; font-size: 18px; width: 100%; }
 button.danger { color: var(--danger); border-color: var(--danger); }
 button.link { background: none; border: none; color: var(--accent); padding: 8px 4px; }
 button.small { padding: 6px 10px; font-size: 14px; }
+button.link.danger { color: var(--danger); }
 
 .login { max-width: 360px; margin: 0 auto; padding: calc(64px + env(safe-area-inset-top)) 20px 20px; }
 
