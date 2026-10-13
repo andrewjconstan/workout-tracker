@@ -141,6 +141,11 @@ button.small { padding: 6px 10px; font-size: 14px; }
 .setline input { margin: 0; padding: 8px; font-size: 16px; text-align: center; }
 .setline .n { width: 28px; font-weight: 700; color: var(--muted); }
 
+.slotrow { padding: 8px 0; border-top: 1px solid var(--border); }
+.slotname { display: flex; gap: 8px; align-items: baseline; }
+.slotname .n { width: 22px; font-weight: 700; color: var(--muted); flex: none; }
+.slotactions { display: flex; gap: 6px; margin: 6px 0 0 30px; }
+
 .sessionlist { list-style: none; padding: 0; margin: 0; }
 .sessionlist li { border-top: 1px solid var(--border); padding: 10px 0; }
 .sessionlist li:first-child { border-top: none; }

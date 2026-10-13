@@ -196,6 +196,17 @@ const session = {
   user: { id: 'u1', aud: 'authenticated', role: 'authenticated', email: 'andy@example.com', app_metadata: {}, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' },
 }
 
+async function eventually(fn, what = 'condition', ms = 5000) {
+  const end = Date.now() + ms
+  while (Date.now() < end) {
+    try {
+      if (await fn()) return
+    } catch { /* retry */ }
+    await new Promise((r) => setTimeout(r, 100))
+  }
+  throw new Error(`timed out waiting for ${what}`)
+}
+
 const failures = []
 async function step(name, fn) {
   try {
@@ -247,8 +258,12 @@ await step('start a home workout and see history for the first exercise', async 
   await page.locator('.card', { hasText: 'Push focus' }).getByRole('button', { name: /Start/ }).click()
   await exName().filter({ hasText: 'Incline Dumbbell Press' }).waitFor({ timeout: 10000 })
   await page.getByText('Round 1 of 3').waitFor()
-  assert.equal(await weightInput().inputValue(), '35', 'weight pre-filled from last session set 1')
+  await eventually(async () => (await weightInput().inputValue()) === '35', 'weight pre-filled with 35 from last session')
   await page.locator('.strip').getByText('35×10').first().waitFor()
+  await eventually(
+    () => page.evaluate(() => document.activeElement?.getAttribute('inputmode') === 'numeric'),
+    'cursor in the reps field when weight is pre-filled',
+  )
   await shot('02-log-first-step')
 })
 
@@ -256,7 +271,7 @@ await step('typing reps and pressing Next advances to the superset partner', asy
   await repsInput().fill('10')
   await page.getByRole('button', { name: 'Next' }).click()
   await exName().filter({ hasText: 'Dumbbell Weighted Lunge' }).waitFor()
-  assert.equal(await repsInput().inputValue(), '')
+  await eventually(async () => (await repsInput().inputValue()) === '', 'reps cleared for the next exercise')
   await shot('03-log-second-step')
   const saved = sets.find((s) => s.workout_id.startsWith('w-new') && s.exercise_id === 'e-incline' && s.set_number === 1)
   assert.ok(saved, 'set 1 saved to the database')
@@ -270,7 +285,7 @@ await step('second exercise, then round 2 of the first', async () => {
   await page.getByRole('button', { name: 'Next' }).click()
   await exName().filter({ hasText: 'Incline Dumbbell Press' }).waitFor()
   await page.getByText('Round 2 of 3').waitFor()
-  assert.equal(await weightInput().inputValue(), '35')
+  await eventually(async () => (await weightInput().inputValue()) === '35', 'weight carried to round 2')
 })
 
 await step('skip moves on without saving', async () => {

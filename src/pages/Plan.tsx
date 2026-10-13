@@ -213,24 +213,28 @@ function RoutineCard({
           <h4 style={{ marginTop: 12 }}>{sec.title}</h4>
           {sec.items.map((s, idx) => (
             <div key={s.id}>
-              <div className="setline">
-                <span className="n">{idx + 1}</span>
-                <span className="grow">
-                  {exName(s.exercise_id)}
-                  {s.location !== 'both' && <> <span className={`badge ${s.location}`}>{s.location}</span></>}
-                  <span className="muted small">
-                    {' '}
-                    · {s.target_sets ? `${s.target_sets} × ` : 'free-form '}
-                    {s.rep_min !== null && s.rep_max !== null
-                      ? s.rep_min === s.rep_max ? s.rep_min : `${s.rep_min}-${s.rep_max}`
-                      : ''}
-                    {s.note ? ` · ${s.note}` : ''}
+              <div className="slotrow">
+                <div className="slotname">
+                  <span className="n">{idx + 1}</span>
+                  <span className="grow">
+                    {exName(s.exercise_id)}
+                    {s.location !== 'both' && <> <span className={`badge ${s.location}`}>{s.location}</span></>}
+                    <span className="muted small">
+                      {' '}
+                      · {s.target_sets ? `${s.target_sets} × ` : 'free-form '}
+                      {s.rep_min !== null && s.rep_max !== null
+                        ? s.rep_min === s.rep_max ? s.rep_min : `${s.rep_min}-${s.rep_max}`
+                        : ''}
+                      {s.note ? ` · ${s.note}` : ''}
+                    </span>
                   </span>
-                </span>
-                <button className="small" aria-label="Move up" onClick={() => void move(s, -1)}>↑</button>
-                <button className="small" aria-label="Move down" onClick={() => void move(s, 1)}>↓</button>
-                <button className="small" onClick={() => setEditSlot(editSlot === s.id ? null : s.id)}>Edit</button>
-                <button className="small" aria-label="Remove" onClick={() => void removeSlot(s)}>✕</button>
+                </div>
+                <div className="slotactions">
+                  <button className="small" aria-label="Move up" onClick={() => void move(s, -1)}>↑</button>
+                  <button className="small" aria-label="Move down" onClick={() => void move(s, 1)}>↓</button>
+                  <button className="small" onClick={() => setEditSlot(editSlot === s.id ? null : s.id)}>Edit</button>
+                  <button className="small" aria-label="Remove" onClick={() => void removeSlot(s)}>✕</button>
+                </div>
               </div>
               {editSlot === s.id && (
                 <SlotForm

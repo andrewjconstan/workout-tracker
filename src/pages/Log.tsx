@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import HistoryStrip from '../components/HistoryStrip'
 import { formatDate } from '../lib/dates'
@@ -282,7 +282,8 @@ function LogInner({ workoutId }: { workoutId: string }) {
   const exHistoryCount = useMemo(() => history.filter((h) => h.exercise_id === exId).length, [history, exId])
 
   // Pre-fill inputs when the step changes (and when this exercise's history arrives).
-  useEffect(() => {
+  // A layout effect so the previous step's values never flash on screen.
+  useLayoutEffect(() => {
     if (!step) return
     const id = `${step.key}|${exId}`
     const changed = lastStepId.current !== id
@@ -305,12 +306,14 @@ function LogInner({ workoutId }: { workoutId: string }) {
       setReps('')
       setMarker(prev?.marker ?? sessions[0]?.sets.find((x) => x.marker)?.marker ?? '')
     }
-    if (changed) {
-      window.setTimeout(() => {
-        const wEmpty = exercise?.kind === 'weighted' && !weightRef.current?.value
-        ;(wEmpty ? weightRef.current : repsRef.current)?.focus()
-      }, 0)
-    }
+    // Put the cursor where typing is needed: reps when the weight is already filled in.
+    const focusSoon = () =>
+      window.requestAnimationFrame(() => {
+        const weightEmpty = exercise?.kind === 'weighted' && !weightRef.current?.value
+        ;(weightEmpty ? weightRef.current : repsRef.current)?.focus()
+      })
+    if (changed) focusSoon()
+    else if (document.activeElement === weightRef.current) focusSoon() // history just arrived and filled the weight
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step?.key, exId, exHistoryCount])
 
