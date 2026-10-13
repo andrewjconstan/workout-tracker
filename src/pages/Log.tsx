@@ -596,6 +596,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
                 history={history.filter((h) => h.exercise_id === id)}
                 workoutId={workoutId}
                 note={notes[id] ?? ''}
+                pastNotes={pastNotes[id]}
                 onSave={(p) => void persistSet(p)}
                 onDelete={(row) => void removeSet(row)}
                 onNote={(text) => void saveNote(id, text)}
@@ -665,6 +666,7 @@ function FinisherCard({
   history,
   workoutId,
   note,
+  pastNotes,
   onSave,
   onDelete,
   onNote,
@@ -677,6 +679,7 @@ function FinisherCard({
   history: HistorySet[]
   workoutId: string
   note: string
+  pastNotes?: Record<string, string>
   onSave: (p: PendingSet) => void
   onDelete: (row: SetRow) => void
   onNote: (text: string) => void
@@ -758,7 +761,7 @@ function FinisherCard({
       </form>
 
       <h4 style={{ marginTop: 14 }}>Previous finishers</h4>
-      <HistoryStrip sessions={past.slice(0, stripCount)} kind={exercise.kind} notes={pastNotes[exercise.id]} />
+      <HistoryStrip sessions={past.slice(0, stripCount)} kind={exercise.kind} notes={pastNotes} />
 
       <details>
         <summary>Note{note ? ' ✓' : ''}</summary>
