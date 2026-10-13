@@ -33,7 +33,17 @@ jobs:
           npm test >> "$R" 2>&1; T=$?; echo "exit: $T" >> "$R"
           echo "## build" >> "$R"
           npm run build >> "$R" 2>&1; B=$?; echo "exit: $B" >> "$R"
-          echo "$TC $T $B" > "$RUNNER_TEMP/exit.txt"
+          echo "## browser smoke test" >> "$R"
+          E=1
+          if [ "$B" = 0 ]; then
+            npm install --no-save --no-audit --no-fund playwright >> "$R" 2>&1
+            npx playwright install --with-deps chromium > "$RUNNER_TEMP/pw-install.log" 2>&1
+            SHOT_DIR="$RUNNER_TEMP/shots" node e2e/smoke.mjs >> "$R" 2>&1; E=$?
+          else
+            echo "skipped: build failed" >> "$R"
+          fi
+          echo "exit: $E" >> "$R"
+          echo "$TC $T $B $E" > "$RUNNER_TEMP/exit.txt"
           cp package-lock.json "$RUNNER_TEMP/package-lock.json" 2>/dev/null || true
 
       # Publishes the report (and the generated lockfile) to a throwaway branch
@@ -45,6 +55,7 @@ jobs:
           mkdir pub
           cp report.txt pub/
           cp package-lock.json pub/ 2>/dev/null || true
+          cp -r shots pub/shots 2>/dev/null || true
           cd pub
           git init -q -b ci-report
           git config user.name "ci"
@@ -55,5 +66,5 @@ jobs:
 
       - name: Fail if any check failed
         run: |
-          read TC T B < "$RUNNER_TEMP/exit.txt"
-          [ "$TC" = 0 ] && [ "$T" = 0 ] && [ "$B" = 0 ]
+          read TC T B E < "$RUNNER_TEMP/exit.txt"
+          [ "$TC" = 0 ] && [ "$T" = 0 ] && [ "$B" = 0 ] && [ "$E" = 0 ]
