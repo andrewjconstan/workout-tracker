@@ -31,6 +31,8 @@ function LogInner({ workoutId }: { workoutId: string }) {
   const [sets, setSets] = useState<SetRow[]>([])
   const [history, setHistory] = useState<HistorySet[]>([])
   const [notes, setNotes] = useState<Record<string, string>>({})
+  // Notes from earlier workouts: exercise id -> workout id -> note.
+  const [pastNotes, setPastNotes] = useState<Record<string, Record<string, string>>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [pendingCount, setPendingCount] = useState(0)
@@ -80,6 +82,20 @@ function LogInner({ workoutId }: { workoutId: string }) {
         else rows.push(...(res.data ?? []).map(toHistory))
       })
       if (rows.length) setHistory((prev) => [...prev, ...rows])
+      const nt = await supabase
+        .from('workout_exercise_notes')
+        .select('workout_id, exercise_id, note')
+        .in('exercise_id', need)
+        .neq('workout_id', workoutId)
+      if (!nt.error && nt.data?.length) {
+        setPastNotes((prev) => {
+          const next = { ...prev }
+          for (const n of nt.data as { workout_id: string; exercise_id: string; note: string }[]) {
+            next[n.exercise_id] = { ...next[n.exercise_id], [n.workout_id]: n.note }
+          }
+          return next
+        })
+      }
     },
     [workoutId],
   )
@@ -218,6 +234,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
   )
 
   async function removeSet(row: SetRow) {
+    if (!window.confirm('Remove this logged set?')) return
     setSets((prev) => prev.filter((s) => s.id !== row.id))
     if (row.id.startsWith('local-')) {
       clearPending([
@@ -522,7 +539,12 @@ function LogInner({ workoutId }: { workoutId: string }) {
           )}
 
           <h4 style={{ marginTop: 14 }}>Previous sessions</h4>
-          <HistoryStrip sessions={sessions.slice(0, stripCount)} kind={exercise.kind} highlightSet={step.round} />
+          <HistoryStrip
+            sessions={sessions.slice(0, stripCount)}
+            kind={exercise.kind}
+            highlightSet={step.round}
+            notes={pastNotes[exId]}
+          />
 
           <details key={exId}>
             <summary>Note{notes[exId] ? ' ✓' : ''}</summary>
@@ -574,6 +596,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
                 history={history.filter((h) => h.exercise_id === id)}
                 workoutId={workoutId}
                 note={notes[id] ?? ''}
+                pastNotes={pastNotes[id]}
                 onSave={(p) => void persistSet(p)}
                 onDelete={(row) => void removeSet(row)}
                 onNote={(text) => void saveNote(id, text)}
@@ -643,6 +666,7 @@ function FinisherCard({
   history,
   workoutId,
   note,
+  pastNotes,
   onSave,
   onDelete,
   onNote,
@@ -655,6 +679,7 @@ function FinisherCard({
   history: HistorySet[]
   workoutId: string
   note: string
+  pastNotes?: Record<string, string>
   onSave: (p: PendingSet) => void
   onDelete: (row: SetRow) => void
   onNote: (text: string) => void
@@ -736,7 +761,7 @@ function FinisherCard({
       </form>
 
       <h4 style={{ marginTop: 14 }}>Previous finishers</h4>
-      <HistoryStrip sessions={past.slice(0, stripCount)} kind={exercise.kind} />
+      <HistoryStrip sessions={past.slice(0, stripCount)} kind={exercise.kind} notes={pastNotes} />
 
       <details>
         <summary>Note{note ? ' ✓' : ''}</summary>

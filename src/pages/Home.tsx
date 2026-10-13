@@ -17,13 +17,16 @@ export default function Home() {
   const [location, setLocation] = useLocalState<Location>('wt-location', 'office')
   const [date, setDate] = useState(localDateString())
   const [busy, setBusy] = useState(false)
+  const [archivedCount, setArchivedCount] = useState(0)
 
   const load = useCallback(async () => {
-    const [r, a, c] = await Promise.all([
+    const [r, a, c, ar] = await Promise.all([
       supabase.from('routines').select('*').eq('archived', false).order('sort_order'),
       supabase.from('workouts').select('*, routines(name)').eq('status', 'in_progress').order('created_at', { ascending: false }),
       supabase.from('workouts').select('*, routines(name)').eq('status', 'completed').order('performed_on', { ascending: false }).limit(5),
+      supabase.from('routines').select('id', { count: 'exact', head: true }).eq('archived', true),
     ])
+    setArchivedCount(ar.count ?? 0)
     const firstError = r.error ?? a.error ?? c.error
     if (firstError) setError(firstError.message)
     setRoutines((r.data ?? []) as Routine[])
@@ -92,10 +95,17 @@ export default function Home() {
       ))}
 
       {routines.length === 0 ? (
-        <div className="card">
-          <p>No routines yet. Load the starter plan (Mon / Tue / Wed supersets) to begin.</p>
-          <button className="primary big" disabled={busy} onClick={loadStarter}>Load starter plan</button>
-        </div>
+        archivedCount > 0 ? (
+          <div className="card">
+            <p>All of your routines are archived. Open Plan, tick "Show archived routines", and tap Unarchive.</p>
+            <Link to="/plan"><button className="primary big">Go to Plan</button></Link>
+          </div>
+        ) : (
+          <div className="card">
+            <p>No routines yet. Load the starter plan (Mon / Tue / Wed supersets) to begin.</p>
+            <button className="primary big" disabled={busy} onClick={loadStarter}>Load starter plan</button>
+          </div>
+        )
       ) : (
         <>
           <div className="row wrap between">

@@ -96,10 +96,32 @@ export default function Settings() {
   async function loadStarter() {
     setBusy(true)
     setError(null)
+    setMessage(null)
+    // The starter plan only ever adds to an empty account; it never changes or removes anything.
+    const { data: existing, error: countError } = await supabase.from('routines').select('id, archived')
+    if (countError) {
+      setBusy(false)
+      setError(countError.message)
+      return
+    }
+    if (existing && existing.length > 0) {
+      const archivedCount = existing.filter((r) => r.archived).length
+      setBusy(false)
+      setMessage(
+        `Nothing changed. You already have ${existing.length} routine(s)` +
+          (archivedCount ? ` (${archivedCount} archived)` : '') +
+          '. The starter plan only loads into an empty account. To restore an archived routine, go to Plan, tick "Show archived routines", and tap Unarchive.',
+      )
+      return
+    }
+    if (!window.confirm('Load the starter exercises and Mon/Tue/Wed routines? Nothing existing will be changed.')) {
+      setBusy(false)
+      return
+    }
     const { error } = await supabase.rpc('seed_starter_plan')
     setBusy(false)
     if (error) setError(error.message)
-    else setMessage('Starter plan loaded (nothing happens if you already have routines).')
+    else setMessage('Starter plan loaded.')
   }
 
   return (

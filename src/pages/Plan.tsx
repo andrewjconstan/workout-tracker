@@ -145,11 +145,18 @@ function RoutineCard({
   onChanged: () => void
   onError: (m: string | null) => void
 }) {
+  const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editSlot, setEditSlot] = useState<string | 'new' | null>(null)
   const exName = (id: string) => exercises.find((e) => e.id === id)?.name ?? 'Exercise'
 
   async function toggleArchive() {
+    if (
+      !routine.archived &&
+      !window.confirm(`Archive "${routine.name}"? It will disappear from Today. Your history is kept and you can restore it from Plan → Show archived routines.`)
+    ) {
+      return
+    }
     const { error } = await supabase.from('routines').update({ archived: !routine.archived }).eq('id', routine.id)
     onError(error ? error.message : null)
     if (!error) onChanged()
@@ -181,6 +188,9 @@ function RoutineCard({
     onChanged()
   }
 
+  const names = [...new Set(slots.map((x) => exName(x.exercise_id)))]
+  const summary = names.length ? `${names.length} exercises` : 'no exercises yet'
+
   // Group slots for display.
   const sections: { title: string; items: RoutineSlot[] }[] = []
   for (const s of slots) {
@@ -192,23 +202,35 @@ function RoutineCard({
 
   return (
     <div className="card">
-      <div className="row between">
-        <div>
-          <h3>{routine.name}{routine.archived ? ' (archived)' : ''}</h3>
-          <p className="muted small">{routine.day_of_week ? DAY_NAMES[routine.day_of_week] : 'Any day'}</p>
-        </div>
-        <div className="row">
+      <button
+        className="link"
+        style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', textAlign: 'left' }}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span>
+          <strong>{routine.name}{routine.archived ? ' (archived)' : ''}</strong>
+          <br />
+          <span className="muted small">
+            {routine.day_of_week ? DAY_NAMES[routine.day_of_week] : 'Any day'} · {summary}
+          </span>
+        </span>
+        <span aria-hidden="true">{open ? '▾' : '▸'}</span>
+      </button>
+
+      {open && (
+        <div className="row" style={{ marginTop: 8 }}>
           <button className="small" onClick={() => setEditing((v) => !v)}>{editing ? 'Close' : 'Edit'}</button>
           <button className="small" onClick={() => void toggleArchive()}>{routine.archived ? 'Unarchive' : 'Archive'}</button>
         </div>
-      </div>
-      {routine.notes && <p className="muted small">{routine.notes}</p>}
+      )}
+      {open && routine.notes && <p className="muted small">{routine.notes}</p>}
 
-      {editing && (
+      {open && editing && (
         <RoutineForm routine={routine} onDone={() => { setEditing(false); onChanged() }} onError={onError} />
       )}
 
-      {sections.map((sec) => (
+      {open && sections.map((sec) => (
         <div key={sec.title}>
           <h4 style={{ marginTop: 12 }}>{sec.title}</h4>
           {sec.items.map((s, idx) => (
@@ -251,7 +273,7 @@ function RoutineCard({
         </div>
       ))}
 
-      <div style={{ marginTop: 12 }}>
+      {open && <div style={{ marginTop: 12 }}>
         {editSlot === 'new' ? (
           <SlotForm
             routineId={routine.id}
@@ -263,7 +285,7 @@ function RoutineCard({
         ) : (
           <button className="small" onClick={() => setEditSlot('new')}>+ Add exercise</button>
         )}
-      </div>
+      </div>}
     </div>
   )
 }
