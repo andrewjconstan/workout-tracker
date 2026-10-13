@@ -4,7 +4,7 @@ A personal workout log built for superset routines: pick a routine and location 
 type reps for each set and hit **Next**, with your previous sessions for that exercise shown while you log.
 
 - **Frontend:** React + Vite + TypeScript, installable to the iPhone home screen
-- **Backend:** Supabase (Postgres + email-code login), every row protected by row-level security
+- **Backend:** Supabase (Postgres + email and password login), every row protected by row-level security
 - **Hosting:** GitHub Pages, deployed by a workflow on every push to `main`
 
 ## What it does
@@ -29,11 +29,9 @@ The schema is in `supabase/migrations/` and has already been applied. To recreat
 In the Supabase dashboard:
 
 1. **Authentication, Sign In / Providers:** keep Email enabled and turn **off** "Allow new users to sign up".
-2. **Authentication, Users:** use **Add user / Invite** to create your account (and your partner's, if wanted).
-3. **Authentication, Email Templates, Magic Link:** include the code in the message body by adding
-   `{{ .Token }}`, for example: `Your sign-in code: {{ .Token }}`. The app asks for this code instead of using a link,
-   because links open in Safari rather than the installed home-screen app.
-4. **Authentication, URL Configuration:** set the Site URL to `https://andrewjconstan.github.io/workout-tracker/`.
+2. **Authentication, Users:** use **Add user, Create new user** with an email and password and **Auto Confirm User** on
+   (one per person, e.g. your partner if wanted). The app signs in with that email and password.
+3. **Authentication, URL Configuration:** set the Site URL to `https://andrewjconstan.github.io/workout-tracker/`.
 
 The client configuration is in `.env.production`. The publishable key is designed to be public; the data is protected
 by login and row-level security, not by hiding the key.
@@ -45,7 +43,7 @@ Repo **Settings, Pages, Source: GitHub Actions**. Merging to `main` then deploys
 
 ### 3. First run
 
-Open the site, sign in with the emailed code, and tap **Load starter plan** on the Today screen.
+Open the site, sign in with your email and password, and tap **Load starter plan** on the Today screen.
 On iPhone: Share, **Add to Home Screen**.
 
 ## Development
