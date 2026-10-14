@@ -441,6 +441,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
   const exerciseOptions = [...exercises.values()].filter((e) => !e.archived).sort((a, b) => a.name.localeCompare(b.name))
   const suggested = suggestSwaps(exercise, exerciseOptions, location)
   const groupSteps = step ? steps.filter((s) => s.group === step.group) : []
+  const exerciseNumber = step ? groupSteps.filter((s) => s.round === step.round).findIndex((s) => s.key === step.key) + 1 : 0
   const groupMembers = step ? [...new Set(groupSteps.map((s) => s.slot.id))].length : 0
   const loggedSteps = steps.filter(isDone).length
   const supersetsDone = !step
@@ -468,7 +469,11 @@ function LogInner({ workoutId }: { workoutId: string }) {
         <div className="card">
           <p className="progress">
             Superset {step.group} · Round {step.round} of {step.rounds}
-            {groupMembers > 1 ? ` · exercise ${groupSteps.filter((s) => s.round === step.round).findIndex((s) => s.key === step.key) + 1} of ${groupMembers}` : ''}
+            {groupMembers > 1 && (
+              <span className={exerciseNumber === groupMembers ? 'last' : undefined}>
+                {' '}· exercise {exerciseNumber} of {groupMembers}
+              </span>
+            )}
           </p>
           {restHints && <p className="resthint">{restHintText(groupMembers > 1)}</p>}
           <div className="dots" aria-hidden="true">
@@ -477,16 +482,12 @@ function LogInner({ workoutId }: { workoutId: string }) {
             ))}
           </div>
 
-          <div className="exercise-name">{exercise.name}</div>
-          <p className="target">
-            {step.slot.rep_min !== null && step.slot.rep_max !== null
-              ? step.slot.rep_min === step.slot.rep_max
-                ? `Target ${step.slot.rep_min} reps`
-                : `Target ${step.slot.rep_min}-${step.slot.rep_max} reps`
-              : 'No rep target'}
-            {step.slot.note ? ` · ${step.slot.note}` : ''}
-            {focusKey ? ' · editing' : ''}
-          </p>
+          <div className={`exercise-name${exercise.name.length > 26 ? ' long' : ''}`}>{exercise.name}</div>
+          {(step.slot.note || focusKey) && (
+            <p className="target">
+              {[step.slot.note, focusKey ? 'editing' : null].filter(Boolean).join(' · ')}
+            </p>
+          )}
 
           <form onSubmit={saveStep}>
             <div className={`inputs${exercise.kind === 'reps_only' ? ' single' : ''}`}>
