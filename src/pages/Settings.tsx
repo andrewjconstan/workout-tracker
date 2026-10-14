@@ -171,6 +171,10 @@ export default function Settings() {
         <p className="muted small">{session?.user.email}</p>
         <button onClick={() => void supabase.auth.signOut()}>Sign out</button>
       </div>
+
+      <p className="muted small" style={{ textAlign: 'center' }} data-testid="app-version">
+        Version {__APP_VERSION__}
+      </p>
     </div>
   )
 }
