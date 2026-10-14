@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { DAY_NAMES } from '../lib/dates'
+import { REST_HINTS_KEY, restHintText } from '../lib/hints'
+import { useLocalState } from '../lib/storage'
 import { supabase } from '../lib/supabase'
 import type { Block, Exercise, Routine, RoutineSlot } from '../lib/types'
 
@@ -22,6 +24,7 @@ export default function Plan() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [newRoutine, setNewRoutine] = useState(false)
+  const [restHints] = useLocalState<boolean>(REST_HINTS_KEY, true)
 
   const load = useCallback(async () => {
     const [r, s, e] = await Promise.all([
@@ -54,6 +57,7 @@ export default function Plan() {
       <p className="muted small">
         Changes here apply to future workouts. Past workouts and their history are never altered.
       </p>
+      {restHints && <p className="resthint">{restHintText(true)}</p>}
       {error && <p className="error">{error}</p>}
 
       {newRoutine && (

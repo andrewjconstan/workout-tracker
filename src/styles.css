@@ -119,6 +119,7 @@ button.link.danger { color: var(--danger); }
 .strip { list-style: none; margin: 6px 0; padding: 0; }
 .strip li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border); }
 .strip li:first-child { border-top: none; }
+.resthint { font-size: 13px; color: var(--muted); margin: 2px 0 8px; }
 .strip-note { flex-basis: 100%; font-size: 14px; padding: 4px 8px; border-left: 3px solid var(--accent); background: var(--hl); border-radius: 4px; white-space: pre-wrap; }
 .strip-date { min-width: 50px; font-weight: 600; font-size: 14px; }
 .strip-sets { display: flex; flex-wrap: wrap; gap: 4px 10px; font-variant-numeric: tabular-nums; }

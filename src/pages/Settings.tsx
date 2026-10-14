@@ -3,6 +3,7 @@ import { useAuth } from '../lib/auth'
 import { toCsv } from '../lib/csv'
 import { clearPending, loadPending } from '../lib/pending'
 import { fetchAll, supabase } from '../lib/supabase'
+import { REST_HINTS_KEY } from '../lib/hints'
 import { useLocalState } from '../lib/storage'
 
 interface ExportRow {
@@ -25,6 +26,7 @@ interface ExportRow {
 export default function Settings() {
   const { session } = useAuth()
   const [stripCount, setStripCount] = useLocalState<number>('wt-strip-count', 5)
+  const [restHints, setRestHints] = useLocalState<boolean>(REST_HINTS_KEY, true)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -139,7 +141,11 @@ export default function Settings() {
             ))}
           </select>
         </label>
-        <p className="muted small">Applies to this device.</p>
+        <label className="row">
+          <input type="checkbox" checked={restHints} onChange={(e) => setRestHints(e.target.checked)} />
+          <span>Show rest reminders (hints)</span>
+        </label>
+        <p className="muted small">Rest reminders show on the log screen and in Plan. Both settings apply to this device.</p>
       </div>
 
       <div className="card stack">
