@@ -18,7 +18,7 @@ const exercises = [
   ex('e-bridge', 'Dumbbell Glute Bridge', 'weighted', 'one dumbbell', null, 'glutes & legs', 'home'),
   ex('e-sumo', 'Dumbbell Sumo Goblet Squat', 'weighted', 'one dumbbell', null, 'glutes & legs'),
   ex('e-standing', 'Standing Dumbbell Press', 'weighted', 'per hand', null, 'shoulders'),
-  ex('e-cable', 'Bent Over Cable Fly', 'weighted', 'stack weight', null, 'chest', 'office'),
+  ex('e-cable', 'Bent Over Cable Fly', 'weighted', 'stack weight', null, 'back', 'office'),
   ex('e-band', 'Bent Over Band Fly', 'band'),
   ex('e-tricep', 'Bent Over Dumbbell Tricep Extension', 'weighted', 'per hand'),
   ex('e-situp', 'Sit-ups', 'reps_only'),
