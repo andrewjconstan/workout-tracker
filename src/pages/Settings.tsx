@@ -5,6 +5,7 @@ import { clearPending, loadPending } from '../lib/pending'
 import { fetchAll, supabase } from '../lib/supabase'
 import { REST_HINTS_KEY } from '../lib/hints'
 import { useLocalState } from '../lib/storage'
+import { applyTheme, THEME_KEY, THEME_LABEL, type Theme } from '../lib/theme'
 
 interface ExportRow {
   block: string
@@ -26,6 +27,7 @@ interface ExportRow {
 export default function Settings() {
   const { session } = useAuth()
   const [stripCount, setStripCount] = useLocalState<number>('wt-strip-count', 5)
+  const [theme, setTheme] = useLocalState<Theme>(THEME_KEY, 'auto')
   const [restHints, setRestHints] = useLocalState<boolean>(REST_HINTS_KEY, true)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -152,6 +154,26 @@ export default function Settings() {
           <span>Show rest reminders</span>
         </label>
         <p className="muted small">Shows rest times on the log screen and in Plan. Applies to this device.</p>
+      </div>
+
+      <div className="card stack">
+        <h3>Appearance</h3>
+        <label>
+          Theme
+          <select
+            value={theme}
+            onChange={(e) => {
+              const next = e.target.value as Theme
+              setTheme(next)
+              applyTheme(next)
+            }}
+          >
+            {(Object.keys(THEME_LABEL) as Theme[]).map((t) => (
+              <option key={t} value={t}>{THEME_LABEL[t]}</option>
+            ))}
+          </select>
+        </label>
+        <p className="muted small">"Match this device" follows your phone or computer. Applies to this device.</p>
       </div>
 
       <div className="card stack">
