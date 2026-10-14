@@ -11,12 +11,14 @@ const OUT = process.env.SHOT_DIR ?? 'shots'
 fs.mkdirSync(OUT, { recursive: true })
 
 // ---------- mock database ----------
-const ex = (id, name, kind, load_note = null, reps_note = null) => ({ id, name, kind, load_note, reps_note, archived: false })
+const ex = (id, name, kind, load_note = null, reps_note = null, swap_group = null, only_at = null) => ({ id, name, kind, load_note, reps_note, archived: false, swap_group, only_at })
 const exercises = [
-  ex('e-incline', 'Incline Dumbbell Press', 'weighted', 'per hand'),
-  ex('e-lunge', 'Dumbbell Weighted Lunge', 'weighted', 'per hand', 'per leg'),
-  ex('e-standing', 'Standing Dumbbell Press', 'weighted', 'per hand'),
-  ex('e-cable', 'Bent Over Cable Fly', 'weighted', 'stack weight'),
+  ex('e-incline', 'Incline Dumbbell Press', 'weighted', 'per hand', null, 'chest'),
+  ex('e-lunge', 'Dumbbell Weighted Lunge', 'weighted', 'per hand', 'per leg', 'glutes & legs'),
+  ex('e-bridge', 'Dumbbell Glute Bridge', 'weighted', 'one dumbbell', null, 'glutes & legs', 'home'),
+  ex('e-sumo', 'Dumbbell Sumo Goblet Squat', 'weighted', 'one dumbbell', null, 'glutes & legs'),
+  ex('e-standing', 'Standing Dumbbell Press', 'weighted', 'per hand', null, 'shoulders'),
+  ex('e-cable', 'Bent Over Cable Fly', 'weighted', 'stack weight', null, 'chest', 'office'),
   ex('e-band', 'Bent Over Band Fly', 'band'),
   ex('e-tricep', 'Bent Over Dumbbell Tricep Extension', 'weighted', 'per hand'),
   ex('e-situp', 'Sit-ups', 'reps_only'),
@@ -297,6 +299,8 @@ await step('skip moves on without saving', async () => {
 
 await step('swap exercise for this workout only', async () => {
   await page.getByRole('button', { name: 'Swap exercise' }).click()
+  const suggestedNames = await page.locator('optgroup[label="Suggested"] option').allTextContents()
+  assert.deepEqual(suggestedNames, ['Dumbbell Glute Bridge', 'Dumbbell Sumo Goblet Squat'], 'suggested swaps (home): same group, location-aware')
   await page.getByLabel(/Do this instead/).selectOption('e-standing')
   await exName().filter({ hasText: 'Standing Dumbbell Press' }).waitFor()
 })

@@ -9,6 +9,10 @@ export interface Exercise {
   load_note: string | null
   reps_note: string | null
   archived: boolean
+  /** "Similar to" tag used to suggest swaps, e.g. "chest" or "glutes & legs". */
+  swap_group: string | null
+  /** Limits suggestions to one location (e.g. a cable fly only makes sense at the office). */
+  only_at: Location | null
 }
 
 export interface Routine {

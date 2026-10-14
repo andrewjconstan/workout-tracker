@@ -6,6 +6,7 @@ import { parseEntry } from '../lib/entry'
 import { fmtNum, formatSet, groupSessions, suggestedWeight, type HistorySet } from '../lib/history'
 import { clearPending, enqueue, loadPending, type PendingSet } from '../lib/pending'
 import { HISTORY_SELECT, toHistory, toSetRow } from '../lib/queries'
+import { suggestSwaps } from '../lib/swap'
 import { buildSteps, effectiveExerciseId, finisherSlots, findCurrentIndex } from '../lib/steps'
 import { useLocalState } from '../lib/storage'
 import { supabase } from '../lib/supabase'
@@ -436,6 +437,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
   }
 
   const exerciseOptions = [...exercises.values()].filter((e) => !e.archived).sort((a, b) => a.name.localeCompare(b.name))
+  const suggested = suggestSwaps(exercise, exerciseOptions, location)
   const groupSteps = step ? steps.filter((s) => s.group === step.group) : []
   const groupMembers = step ? [...new Set(groupSteps.map((s) => s.slot.id))].length : 0
   const loggedSteps = steps.filter(isDone).length
@@ -531,9 +533,19 @@ function LogInner({ workoutId }: { workoutId: string }) {
             <label style={{ marginTop: 8 }}>
               Do this instead (this workout only)
               <select value={exId} onChange={(e) => swapTo(e.target.value)}>
-                {exerciseOptions.map((o) => (
-                  <option key={o.id} value={o.id}>{o.name}</option>
-                ))}
+                <option value={exId}>{exercise.name} (current)</option>
+                {suggested.length > 0 && (
+                  <optgroup label="Suggested">
+                    {suggested.map((o) => (
+                      <option key={o.id} value={o.id}>{o.name}</option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label={suggested.length > 0 ? 'All exercises' : 'Exercises'}>
+                  {exerciseOptions.filter((o) => o.id !== exId).map((o) => (
+                    <option key={o.id} value={o.id}>{o.name}</option>
+                  ))}
+                </optgroup>
               </select>
             </label>
           )}
