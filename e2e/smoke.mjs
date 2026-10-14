@@ -381,6 +381,14 @@ await step('load starter plan does nothing when routines exist', async () => {
   await page.getByTestId('app-version').getByText(/^Version \S+/).waitFor()
 })
 
+await step('theme can be forced dark and back to auto', async () => {
+  await page.getByRole('link', { name: 'More' }).click()
+  await page.getByLabel('Theme').selectOption('dark')
+  assert.equal(await page.evaluate(() => document.documentElement.getAttribute('data-theme')), 'dark')
+  await page.getByLabel('Theme').selectOption('auto')
+  assert.equal(await page.evaluate(() => document.documentElement.getAttribute('data-theme')), null)
+})
+
 await step('rest reminders can be switched off in More', async () => {
   await page.getByRole('link', { name: 'Plan' }).click()
   await page.getByText(/Rest 30s \/\/ 45-60s/).waitFor()
