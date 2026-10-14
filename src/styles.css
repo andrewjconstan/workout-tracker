@@ -126,11 +126,13 @@ button.link.danger { color: var(--danger); }
 .strip-sets .hl { background: var(--hl); border-radius: 4px; padding: 0 4px; font-weight: 700; }
 
 .exercise-name { font-size: 22px; font-weight: 700; margin: 2px 0; }
+.exercise-name.long { font-size: 18px; }
 .target { font-size: 15px; color: var(--muted); }
 .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
 .inputs.single { grid-template-columns: 1fr; }
 .inputs input { font-size: 28px; text-align: center; font-weight: 700; padding: 14px 8px; }
 .progress { font-size: 14px; color: var(--muted); font-weight: 600; }
+.progress .last { color: var(--danger); }
 .dots { display: flex; gap: 6px; margin: 6px 0 10px; }
 .dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
 .dots span.done { background: var(--accent); }

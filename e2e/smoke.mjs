@@ -263,7 +263,9 @@ await step('start a home workout and see history for the first exercise', async 
   await eventually(async () => (await weightInput().inputValue()) === '35', 'weight pre-filled with 35 from last session')
   await page.locator('.strip').getByText('35×10').first().waitFor()
   await page.locator('.strip-note').getByText('Go slower on the way down').waitFor()
-  await page.getByText('Rest 30 s between exercises · 45-60 s after each round').waitFor()
+  await page.getByText('Rest 30s // 45-60s after each round').waitFor()
+  assert.equal(await page.getByText(/Target \d/).count(), 0, 'no target-reps line')
+  assert.equal(await page.locator('.progress .last').count(), 0, 'first exercise is not highlighted')
   await eventually(
     () => page.evaluate(() => document.activeElement?.getAttribute('inputmode') === 'numeric'),
     'cursor in the reps field when weight is pre-filled',
@@ -275,6 +277,7 @@ await step('typing reps and pressing Next advances to the superset partner', asy
   await repsInput().fill('10')
   await page.getByRole('button', { name: 'Next' }).click()
   await exName().filter({ hasText: 'Dumbbell Weighted Lunge' }).waitFor()
+  await page.locator('.progress .last').getByText('exercise 2 of 2').waitFor()
   await eventually(async () => (await repsInput().inputValue()) === '', 'reps cleared for the next exercise')
   await shot('03-log-second-step')
   const saved = sets.find((s) => s.workout_id.startsWith('w-new') && s.exercise_id === 'e-incline' && s.set_number === 1)
@@ -380,12 +383,12 @@ await step('load starter plan does nothing when routines exist', async () => {
 
 await step('rest reminders can be switched off in More', async () => {
   await page.getByRole('link', { name: 'Plan' }).click()
-  await page.getByText(/Rest 30 s between exercises/).waitFor()
+  await page.getByText(/Rest 30s \/\/ 45-60s/).waitFor()
   await page.getByRole('link', { name: 'More' }).click()
   await page.getByLabel(/Show rest reminders/).uncheck()
   await page.getByRole('link', { name: 'Plan' }).click()
   await page.getByText('Push focus').first().waitFor()
-  assert.equal(await page.getByText(/Rest 30 s between exercises/).count(), 0, 'reminder hidden when off')
+  assert.equal(await page.getByText(/Rest 30s \/\/ 45-60s/).count(), 0, 'reminder hidden when off')
 })
 
 await step('no runtime errors in the browser', async () => {
