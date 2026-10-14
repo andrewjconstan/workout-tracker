@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import SwapFields from '../components/SwapFields'
+import { swapGroups } from '../lib/swap'
 import { supabase } from '../lib/supabase'
-import type { Exercise, ExerciseKind } from '../lib/types'
+import type { Exercise, ExerciseKind, Location } from '../lib/types'
 
 export const KIND_LABEL: Record<ExerciseKind, string> = {
   weighted: 'Weight × reps',
@@ -19,6 +21,8 @@ export default function Exercises() {
   const [kind, setKind] = useState<ExerciseKind>('weighted')
   const [loadNote, setLoadNote] = useState('')
   const [repsNote, setRepsNote] = useState('')
+  const [swapGroup, setSwapGroup] = useState('')
+  const [onlyAt, setOnlyAt] = useState<'' | Location>('')
 
   const load = useCallback(async () => {
     const { data, error } = await supabase.from('exercises').select('*').order('name')
@@ -38,6 +42,8 @@ export default function Exercises() {
       kind,
       load_note: loadNote.trim() || null,
       reps_note: repsNote.trim() || null,
+      swap_group: swapGroup.trim() || null,
+      only_at: onlyAt || null,
     })
     if (error) {
       setError(/duplicate|unique/i.test(error.message) ? 'You already have an exercise with that name.' : error.message)
@@ -47,6 +53,8 @@ export default function Exercises() {
     setName('')
     setLoadNote('')
     setRepsNote('')
+    setSwapGroup('')
+    setOnlyAt('')
     setAdding(false)
     void load()
   }
@@ -84,6 +92,7 @@ export default function Exercises() {
             Reps note (e.g. per leg)
             <input value={repsNote} onChange={(e) => setRepsNote(e.target.value)} />
           </label>
+          <SwapFields group={swapGroup} onGroup={setSwapGroup} onlyAt={onlyAt} onOnlyAt={setOnlyAt} knownGroups={swapGroups(list)} />
           <button className="primary" disabled={!name.trim()}>Add exercise</button>
         </form>
       )}

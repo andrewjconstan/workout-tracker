@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import HistoryStrip from '../components/HistoryStrip'
+import SwapFields from '../components/SwapFields'
 import LineChart from '../components/LineChart'
 import { formatDate, formatShortDate } from '../lib/dates'
 import { formatSet, groupSessions, sessionTopWeight, sessionTotalReps } from '../lib/history'
 import { HISTORY_SELECT, toHistory } from '../lib/queries'
+import { swapGroups } from '../lib/swap'
 import { fetchAll, supabase } from '../lib/supabase'
 import type { Block, Exercise, ExerciseKind, Location } from '../lib/types'
 import { KIND_LABEL } from './Exercises'
@@ -24,6 +26,9 @@ export default function ExerciseDetail() {
   const [kind, setKind] = useState<ExerciseKind>('weighted')
   const [loadNote, setLoadNote] = useState('')
   const [repsNote, setRepsNote] = useState('')
+  const [swapGroup, setSwapGroup] = useState('')
+  const [onlyAt, setOnlyAt] = useState<'' | Location>('')
+  const [knownGroups, setKnownGroups] = useState<string[]>([])
 
   const load = useCallback(async () => {
     try {
@@ -35,6 +40,10 @@ export default function ExerciseDetail() {
       setKind(e.kind)
       setLoadNote(e.load_note ?? '')
       setRepsNote(e.reps_note ?? '')
+      setSwapGroup(e.swap_group ?? '')
+      setOnlyAt(e.only_at ?? '')
+      const g = await supabase.from('exercises').select('swap_group')
+      setKnownGroups(swapGroups(((g.data ?? []) as { swap_group: string | null }[]).map((r) => ({ swap_group: r.swap_group }) as Exercise)))
 
       const data = await fetchAll<unknown>((from, to) =>
         supabase
@@ -72,6 +81,8 @@ export default function ExerciseDetail() {
       name: name.trim(),
       load_note: loadNote.trim() || null,
       reps_note: repsNote.trim() || null,
+      swap_group: swapGroup.trim() || null,
+      only_at: onlyAt || null,
     }
     if (rows.length === 0) patch.kind = kind
     const { error } = await supabase.from('exercises').update(patch).eq('id', exercise.id)
@@ -143,6 +154,7 @@ export default function ExerciseDetail() {
             Reps note
             <input value={repsNote} onChange={(e) => setRepsNote(e.target.value)} />
           </label>
+          <SwapFields group={swapGroup} onGroup={setSwapGroup} onlyAt={onlyAt} onOnlyAt={setOnlyAt} knownGroups={knownGroups} />
           <div className="row">
             <button className="primary grow" disabled={!name.trim()} onClick={() => void save()}>Save</button>
             <button onClick={() => void toggleArchive()}>{exercise.archived ? 'Unarchive' : 'Archive'}</button>
