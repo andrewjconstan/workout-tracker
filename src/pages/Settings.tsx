@@ -133,6 +133,7 @@ export default function Settings() {
       {message && <p className="muted">{message}</p>}
 
       <div className="card stack">
+        <h3>History</h3>
         <label>
           Sessions shown while logging
           <select value={stripCount} onChange={(e) => setStripCount(Number(e.target.value))}>
@@ -141,11 +142,16 @@ export default function Settings() {
             ))}
           </select>
         </label>
+        <p className="muted small">Applies to this device.</p>
+      </div>
+
+      <div className="card stack">
+        <h3>Hints</h3>
         <label className="row">
           <input type="checkbox" checked={restHints} onChange={(e) => setRestHints(e.target.checked)} />
-          <span>Show rest reminders (hints)</span>
+          <span>Show rest reminders</span>
         </label>
-        <p className="muted small">Rest reminders show on the log screen and in Plan. Both settings apply to this device.</p>
+        <p className="muted small">Shows rest times on the log screen and in Plan. Applies to this device.</p>
       </div>
 
       <div className="card stack">
