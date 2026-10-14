@@ -31,6 +31,6 @@ test('swap suggestions are empty without a group', () => {
   assert.deepEqual(suggestSwaps(undefined, all, 'home'), [])
 })
 
-test('swap groups are distinct and sorted', () => {
-  assert.deepEqual(swapGroups(all), ['chest', 'Glutes & Legs', 'glutes & legs'])
+test('swap groups are distinct (ignoring case) and sorted', () => {
+  assert.deepEqual(swapGroups(all), ['chest', 'glutes & legs'])
 })

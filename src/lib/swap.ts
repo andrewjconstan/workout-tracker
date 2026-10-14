@@ -17,7 +17,12 @@ export function suggestSwaps(current: Exercise | undefined, all: Exercise[], loc
     .sort(byName)
 }
 
-/** Distinct swap groups already in use, for autocomplete. */
+/** Distinct swap groups already in use (case-insensitive), for autocomplete. */
 export function swapGroups(all: Exercise[]): string[] {
-  return [...new Set(all.map((e) => e.swap_group?.trim()).filter((g): g is string => !!g))].sort((a, b) => a.localeCompare(b))
+  const seen = new Map<string, string>()
+  for (const e of all) {
+    const g = e.swap_group?.trim()
+    if (g && !seen.has(g.toLowerCase())) seen.set(g.toLowerCase(), g)
+  }
+  return [...seen.values()].sort((a, b) => a.localeCompare(b))
 }
