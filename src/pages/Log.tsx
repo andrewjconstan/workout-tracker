@@ -6,6 +6,7 @@ import { parseEntry } from '../lib/entry'
 import { fmtNum, formatSet, groupSessions, suggestedWeight, type HistorySet } from '../lib/history'
 import { clearPending, enqueue, loadPending, type PendingSet } from '../lib/pending'
 import { HISTORY_SELECT, toHistory, toSetRow } from '../lib/queries'
+import { REST_HINTS_KEY, restHintText } from '../lib/hints'
 import { suggestSwaps } from '../lib/swap'
 import { buildSteps, effectiveExerciseId, finisherSlots, findCurrentIndex } from '../lib/steps'
 import { useLocalState } from '../lib/storage'
@@ -42,6 +43,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
   const [skipped, setSkipped] = useLocalState<string[]>(`wt-skipped-${workoutId}`, [])
   const [extra, setExtra] = useLocalState<Record<string, number>>(`wt-extra-${workoutId}`, {})
   const [stripCount] = useLocalState<number>('wt-strip-count', 5)
+  const [restHints] = useLocalState<boolean>(REST_HINTS_KEY, true)
 
   const [focusKey, setFocusKey] = useState<string | null>(null)
   const [weight, setWeight] = useState('')
@@ -468,6 +470,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
             Superset {step.group} · Round {step.round} of {step.rounds}
             {groupMembers > 1 ? ` · exercise ${groupSteps.filter((s) => s.round === step.round).findIndex((s) => s.key === step.key) + 1} of ${groupMembers}` : ''}
           </p>
+          {restHints && <p className="resthint">{restHintText(groupMembers > 1)}</p>}
           <div className="dots" aria-hidden="true">
             {steps.map((s) => (
               <span key={s.key} className={`${isDone(s) ? 'done' : ''} ${s.key === step.key ? 'now' : ''}`} />

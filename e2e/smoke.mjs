@@ -263,6 +263,7 @@ await step('start a home workout and see history for the first exercise', async 
   await eventually(async () => (await weightInput().inputValue()) === '35', 'weight pre-filled with 35 from last session')
   await page.locator('.strip').getByText('35×10').first().waitFor()
   await page.locator('.strip-note').getByText('Go slower on the way down').waitFor()
+  await page.getByText('Rest 30 s between exercises · 45-60 s after each round').waitFor()
   await eventually(
     () => page.evaluate(() => document.activeElement?.getAttribute('inputmode') === 'numeric'),
     'cursor in the reps field when weight is pre-filled',
@@ -374,6 +375,16 @@ await step('load starter plan does nothing when routines exist', async () => {
   await page.getByRole('link', { name: 'More' }).click()
   await page.getByRole('button', { name: 'Load starter plan' }).click()
   await page.getByText(/Nothing changed/).waitFor()
+})
+
+await step('rest reminders can be switched off in More', async () => {
+  await page.getByRole('link', { name: 'Plan' }).click()
+  await page.getByText(/Rest 30 s between exercises/).waitFor()
+  await page.getByRole('link', { name: 'More' }).click()
+  await page.getByLabel(/Show rest reminders/).uncheck()
+  await page.getByRole('link', { name: 'Plan' }).click()
+  await page.getByText('Push focus').first().waitFor()
+  assert.equal(await page.getByText(/Rest 30 s between exercises/).count(), 0, 'reminder hidden when off')
 })
 
 await step('no runtime errors in the browser', async () => {
