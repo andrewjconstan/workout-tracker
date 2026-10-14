@@ -375,6 +375,7 @@ await step('load starter plan does nothing when routines exist', async () => {
   await page.getByRole('link', { name: 'More' }).click()
   await page.getByRole('button', { name: 'Load starter plan' }).click()
   await page.getByText(/Nothing changed/).waitFor()
+  await page.getByTestId('app-version').getByText(/^Version \S+/).waitFor()
 })
 
 await step('rest reminders can be switched off in More', async () => {
