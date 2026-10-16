@@ -4,6 +4,7 @@ import { toCsv } from '../lib/csv'
 import { clearPending, loadPending } from '../lib/pending'
 import { fetchAll, supabase } from '../lib/supabase'
 import { REST_HINTS_KEY } from '../lib/hints'
+import { QUICK_ROUTINE_NAME } from '../lib/quick'
 import { useLocalState } from '../lib/storage'
 import { applyTheme, THEME_KEY, THEME_LABEL, type Theme } from '../lib/theme'
 
@@ -102,7 +103,7 @@ export default function Settings() {
     setError(null)
     setMessage(null)
     // The starter plan only ever adds to an empty account; it never changes or removes anything.
-    const { data: existing, error: countError } = await supabase.from('routines').select('id, archived')
+    const { data: existing, error: countError } = await supabase.from('routines').select('id, archived').neq('name', QUICK_ROUTINE_NAME)
     if (countError) {
       setBusy(false)
       setError(countError.message)

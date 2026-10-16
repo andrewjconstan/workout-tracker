@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { DAY_NAMES } from '../lib/dates'
 import { REST_HINTS_KEY, restHintText } from '../lib/hints'
+import { QUICK_ROUTINE_NAME } from '../lib/quick'
 import { useLocalState } from '../lib/storage'
 import { supabase } from '../lib/supabase'
 import type { Block, Exercise, Routine, RoutineSlot } from '../lib/types'
@@ -34,7 +35,7 @@ export default function Plan() {
     ])
     const firstError = r.error ?? s.error ?? e.error
     if (firstError) setError(firstError.message)
-    setRoutines((r.data ?? []) as Routine[])
+    setRoutines(((r.data ?? []) as Routine[]).filter((x) => x.name !== QUICK_ROUTINE_NAME))
     setSlots((s.data ?? []) as RoutineSlot[])
     setExercises((e.data ?? []) as Exercise[])
     setLoading(false)
