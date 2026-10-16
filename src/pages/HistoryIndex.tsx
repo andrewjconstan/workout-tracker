@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DAY_NAMES, formatDate } from '../lib/dates'
+import { QUICK_ROUTINE_NAME } from '../lib/quick'
 import { fetchAll, supabase } from '../lib/supabase'
 import type { Routine } from '../lib/types'
 
@@ -59,7 +60,7 @@ export default function HistoryIndex() {
           <Link key={r.id} to={`/history/${r.id}`} className="card link">
             <div className="row between">
               <div>
-                <h3>{r.name}{r.archived ? ' (archived)' : ''}</h3>
+                <h3>{r.name}{r.archived && r.name !== QUICK_ROUTINE_NAME ? ' (archived)' : ''}</h3>
                 <p className="muted small">{r.day_of_week ? DAY_NAMES[r.day_of_week] : 'Any day'}</p>
               </div>
               <div className="muted small" style={{ textAlign: 'right' }}>

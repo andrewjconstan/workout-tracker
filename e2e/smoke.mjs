@@ -399,6 +399,24 @@ await step('rest reminders can be switched off in More', async () => {
   assert.equal(await page.getByText(/Rest 30s \/\/ 45-60s/).count(), 0, 'reminder hidden when off')
 })
 
+await step('quick workout starts without a routine and hides its routine from Plan', async () => {
+  await page.getByRole('link', { name: 'Today' }).click()
+  await page.getByRole('button', { name: 'Choose' }).click()
+  await page.getByRole('checkbox', { name: /Pushups/ }).check()
+  await page.getByRole('checkbox', { name: /Incline Dumbbell Press/ }).check()
+  await page.getByRole('button', { name: /^Start/ }).last().click()
+  await exName().filter({ hasText: 'Pushups' }).waitFor({ timeout: 10000 })
+  await page.getByText('Round 1 of 3').waitFor()
+  await page.getByText('exercise 1 of 2').waitFor()
+  const quick = routines.find((r) => r.name === 'Quick workout')
+  assert.ok(quick && quick.archived === true, 'hidden quick routine exists')
+  assert.equal(routine_slots.filter((s) => s.routine_id === quick.id).length, 2, 'two quick slots')
+  await page.getByRole('link', { name: 'Exit' }).click().catch(() => page.getByRole('button', { name: 'Exit' }).click())
+  await page.getByRole('link', { name: 'Plan' }).click()
+  await page.getByText('Push focus').first().waitFor()
+  assert.equal(await page.getByText('Quick workout').count(), 0, 'quick routine hidden in Plan')
+})
+
 await step('no runtime errors in the browser', async () => {
   assert.deepEqual(pageErrors, [])
 })

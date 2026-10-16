@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { DAY_NAMES, dayOfWeekMon1, formatDate, localDateString } from '../lib/dates'
+import QuickWorkout from '../components/QuickWorkout'
+import { QUICK_ROUTINE_NAME } from '../lib/quick'
 import { useLocalState } from '../lib/storage'
 import type { Location, Routine, Workout } from '../lib/types'
 
@@ -24,7 +26,7 @@ export default function Home() {
       supabase.from('routines').select('*').eq('archived', false).order('sort_order'),
       supabase.from('workouts').select('*, routines(name)').eq('status', 'in_progress').order('created_at', { ascending: false }),
       supabase.from('workouts').select('*, routines(name)').eq('status', 'completed').order('performed_on', { ascending: false }).limit(5),
-      supabase.from('routines').select('id', { count: 'exact', head: true }).eq('archived', true),
+      supabase.from('routines').select('id', { count: 'exact', head: true }).eq('archived', true).neq('name', QUICK_ROUTINE_NAME),
     ])
     setArchivedCount(ar.count ?? 0)
     const firstError = r.error ?? a.error ?? c.error
@@ -135,6 +137,14 @@ export default function Home() {
               </div>
             </div>
           ))}
+
+          <QuickWorkout
+            location={location}
+            date={date}
+            blocked={active.some((w) => w.routines?.name === QUICK_ROUTINE_NAME)}
+            onStarted={(id) => nav(`/log/${id}`)}
+            onError={setError}
+          />
         </>
       )}
 
