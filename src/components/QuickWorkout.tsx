@@ -120,7 +120,7 @@ export default function QuickWorkout({
           </div>
           <label className="row">
             <input type="checkbox" checked={alternate} onChange={(e) => setAlternate(e.target.checked)} />
-            <span>Alternate exercises (superset)</span>
+            <span>Alternate exercises in pairs (1+2, 3+4)</span>
           </label>
           <button className="primary big" disabled={busy || blocked || picked.length === 0} onClick={() => void start()}>
             {busy ? 'Starting…' : `Start (${location === 'office' ? 'Office' : 'Home'})`}

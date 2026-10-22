@@ -113,7 +113,7 @@ export default function Home() {
           <div className="row wrap between">
             <div className="seg" role="group" aria-label="Location">
               <button className={location === 'office' ? 'on' : ''} onClick={() => setLocation('office')}>Office</button>
-              <button className={location === 'home' ? 'on' : ''} onClick={() => setLocation('home')}>Home</button>
+              <button className={location === 'home' ? 'on home' : ''} onClick={() => setLocation('home')}>Home</button>
             </div>
             <details>
               <summary className="small muted">Date: {formatDate(date)}</summary>
