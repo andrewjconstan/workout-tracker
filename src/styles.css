@@ -115,6 +115,7 @@ button {
 }
 button:disabled { opacity: 0.5; cursor: default; }
 button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+button.primary.home { background: var(--home); border-color: var(--home); }
 button.big { padding: 16px; font-size: 18px; width: 100%; }
 button.danger { color: var(--danger); border-color: var(--danger); }
 button.link { background: none; border: none; color: var(--accent); padding: 8px 4px; }
