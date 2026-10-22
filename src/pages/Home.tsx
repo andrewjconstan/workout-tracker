@@ -131,7 +131,7 @@ export default function Home() {
                     {r.day_of_week === today ? ' · today' : ''}
                   </p>
                 </div>
-                <button className="primary" disabled={busy} onClick={() => start(r)}>
+                <button className={`primary ${location}`} disabled={busy} onClick={() => start(r)}>
                   Start ({location === 'office' ? 'Office' : 'Home'})
                 </button>
               </div>
