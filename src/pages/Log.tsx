@@ -606,7 +606,6 @@ function LogInner({ workoutId }: { workoutId: string }) {
             return (
               <FinisherCard
                 key={slot.id}
-                slot={slot}
                 exercise={ex}
                 sets={sets.filter((s) => s.exercise_id === id && s.block === 'finisher')}
                 history={history.filter((h) => h.exercise_id === id)}
@@ -676,7 +675,6 @@ function LogInner({ workoutId }: { workoutId: string }) {
 }
 
 function FinisherCard({
-  slot,
   exercise,
   sets,
   history,
@@ -689,7 +687,6 @@ function FinisherCard({
   onNeedHistory,
   stripCount,
 }: {
-  slot: RoutineSlot
   exercise: Exercise
   sets: SetRow[]
   history: HistorySet[]
@@ -741,7 +738,6 @@ function FinisherCard({
   return (
     <div className="card">
       <div className="exercise-name">{exercise.name}</div>
-      {slot.note && <p className="target">{slot.note}</p>}
 
       {sorted.map((s) => (
         <div key={s.id} className="setline">
