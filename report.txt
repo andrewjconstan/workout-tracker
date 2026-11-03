@@ -1,0 +1,236 @@
+branch: main  sha: 46d9429c987ce4ee1dd394fc0be86509db69d13c
+## install
+
+added 86 packages in 3s
+exit: 0
+## typecheck
+exit: 0
+## test
+
+> workout-tracker@0.1.0 test
+> tsx --test src/lib/*.test.ts
+
+TAP version 13
+# Subtest: escapes commas, quotes and newlines
+ok 1 - escapes commas, quotes and newlines
+  ---
+  duration_ms: 1.311019
+  type: 'test'
+  ...
+# Subtest: builds rows
+ok 2 - builds rows
+  ---
+  duration_ms: 0.16949
+  type: 'test'
+  ...
+# Subtest: local date uses local calendar fields, not UTC
+ok 3 - local date uses local calendar fields, not UTC
+  ---
+  duration_ms: 1.093038
+  type: 'test'
+  ...
+# Subtest: Monday-first weekday numbers
+ok 4 - Monday-first weekday numbers
+  ---
+  duration_ms: 0.163992
+  type: 'test'
+  ...
+# Subtest: date formatting does not shift by time zone
+ok 5 - date formatting does not shift by time zone
+  ---
+  duration_ms: 0.207325
+  type: 'test'
+  ...
+# Subtest: weighted needs weight and whole-number reps
+ok 6 - weighted needs weight and whole-number reps
+  ---
+  duration_ms: 1.457074
+  type: 'test'
+  ...
+# Subtest: reps-only ignores weight and marker
+ok 7 - reps-only ignores weight and marker
+  ---
+  duration_ms: 0.158493
+  type: 'test'
+  ...
+# Subtest: band keeps a free-text marker, blank becomes null
+ok 8 - band keeps a free-text marker, blank becomes null
+  ---
+  duration_ms: 0.198062
+  type: 'test'
+  ...
+# Subtest: sessions are newest first and sets are ordered
+ok 9 - sessions are newest first and sets are ordered
+  ---
+  duration_ms: 1.193286
+  type: 'test'
+  ...
+# Subtest: limit, exclusion, block and location filters
+ok 10 - limit, exclusion, block and location filters
+  ---
+  duration_ms: 0.303998
+  type: 'test'
+  ...
+# Subtest: same date ties break by most recently logged
+ok 11 - same date ties break by most recently logged
+  ---
+  duration_ms: 0.128859
+  type: 'test'
+  ...
+# Subtest: set formatting by exercise kind
+ok 12 - set formatting by exercise kind
+  ---
+  duration_ms: 0.182749
+  type: 'test'
+  ...
+# Subtest: session totals
+ok 13 - session totals
+  ---
+  duration_ms: 0.226673
+  type: 'test'
+  ...
+# Subtest: weight suggestion prefers the same set number from the last session
+ok 14 - weight suggestion prefers the same set number from the last session
+  ---
+  duration_ms: 0.360591
+  type: 'test'
+  ...
+# Subtest: alternating quick workout: pairs of exercises
+ok 15 - alternating quick workout: pairs of exercises
+  ---
+  duration_ms: 1.445517
+  type: 'test'
+  ...
+# Subtest: alternating with four exercises pairs 1+2 and 3+4
+ok 16 - alternating with four exercises pairs 1+2 and 3+4
+  ---
+  duration_ms: 0.236388
+  type: 'test'
+  ...
+# Subtest: alternating with an odd count leaves the last exercise alone at the end
+ok 17 - alternating with an odd count leaves the last exercise alone at the end
+  ---
+  duration_ms: 0.223029
+  type: 'test'
+  ...
+# Subtest: straight sets quick workout: one group per exercise
+ok 18 - straight sets quick workout: one group per exercise
+  ---
+  duration_ms: 0.19052
+  type: 'test'
+  ...
+# Subtest: supersets alternate exercises round by round
+ok 19 - supersets alternate exercises round by round
+  ---
+  duration_ms: 1.811256
+  type: 'test'
+  ...
+# Subtest: groups run in order
+ok 20 - groups run in order
+  ---
+  duration_ms: 0.326321
+  type: 'test'
+  ...
+# Subtest: location variants: only the matching fly appears
+ok 21 - location variants: only the matching fly appears
+  ---
+  duration_ms: 0.313401
+  type: 'test'
+  ...
+# Subtest: added rounds extend a group
+ok 22 - added rounds extend a group
+  ---
+  duration_ms: 0.178133
+  type: 'test'
+  ...
+# Subtest: finishers are not steps but are listed separately
+ok 23 - finishers are not steps but are listed separately
+  ---
+  duration_ms: 0.240193
+  type: 'test'
+  ...
+# Subtest: substitution overrides the exercise for one slot
+ok 24 - substitution overrides the exercise for one slot
+  ---
+  duration_ms: 0.166224
+  type: 'test'
+  ...
+# Subtest: current index skips done and skipped steps
+ok 25 - current index skips done and skipped steps
+  ---
+  duration_ms: 0.226573
+  type: 'test'
+  ...
+# Subtest: swap suggestions: same group, not itself, not archived, sorted by name
+ok 26 - swap suggestions: same group, not itself, not archived, sorted by name
+  ---
+  duration_ms: 6.528196
+  type: 'test'
+  ...
+# Subtest: swap suggestions respect location
+ok 27 - swap suggestions respect location
+  ---
+  duration_ms: 0.134788
+  type: 'test'
+  ...
+# Subtest: swap suggestions are empty without a group
+ok 28 - swap suggestions are empty without a group
+  ---
+  duration_ms: 0.096682
+  type: 'test'
+  ...
+# Subtest: swap groups are distinct (ignoring case) and sorted
+ok 29 - swap groups are distinct (ignoring case) and sorted
+  ---
+  duration_ms: 0.125926
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 608.747601
+exit: 0
+## build
+
+> workout-tracker@0.1.0 build
+> tsc --noEmit && vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 105 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  1.00 kB[22m[1m[22m[2m │ gzip:   0.42 kB[22m
+[2mdist/[22m[2massets/[22m[35mindex-CIj1XZUB.css  [39m[1m[2m  6.54 kB[22m[1m[22m[2m │ gzip:   2.01 kB[22m
+[2mdist/[22m[2massets/[22m[36mindex-Cu2H85hg.js   [39m[1m[2m459.31 kB[22m[1m[22m[2m │ gzip: 130.98 kB[22m
+[32m✓ built in 1.41s[39m
+exit: 0
+## browser smoke test
+
+added 2 packages in 1s
+PASS home shows routines
+PASS start a home workout and see history for the first exercise
+PASS typing reps and pressing Next advances to the superset partner
+PASS second exercise, then round 2 of the first
+PASS skip moves on without saving
+PASS swap exercise for this workout only
+PASS home variant shows the band fly, not the cable fly
+PASS sets entered during an outage are queued, then sync
+PASS finish the workout
+PASS history by routine lists dates and sets, with location filter
+PASS exercise detail shows sessions and charts
+PASS plan editor renders slots with location badges
+PASS archiving a routine asks for confirmation
+PASS load starter plan does nothing when routines exist
+PASS theme can be forced dark and back to auto
+PASS rest reminders can be switched off in More
+PASS quick workout starts without a routine and hides its routine from Plan
+PASS no runtime errors in the browser
+
+All smoke steps passed.
+exit: 0
