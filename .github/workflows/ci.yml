@@ -27,6 +27,8 @@ jobs:
           echo "branch: $GITHUB_REF_NAME  sha: $GITHUB_SHA" >> "$R"
           echo "## install" >> "$R"
           npm install --no-audit --no-fund >> "$R" 2>&1; echo "exit: $?" >> "$R"
+          echo "## dependency audit (informational)" >> "$R"
+          npm audit --omit=dev >> "$R" 2>&1; echo "exit: $?" >> "$R"
           echo "## typecheck" >> "$R"
           npx tsc --noEmit >> "$R" 2>&1; TC=$?; echo "exit: $TC" >> "$R"
           echo "## test" >> "$R"
