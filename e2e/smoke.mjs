@@ -430,7 +430,7 @@ await step('an archived routine can be permanently deleted with its logged worko
   await page.getByRole('button', { name: 'Permanently delete' }).click()
   await eventually(async () => !routines.some((r) => r.id === 'r-old'), 'routine deleted')
   assert.ok(asked.includes('1 logged workout'), `confirmation mentions the workout: ${asked}`)
-  assert.ok(!workouts.some((w) => w.id === 'w-old'), 'its workout deleted too')
+  assert.ok(!workouts.some((w) => w.id === 'w-old'), `its workout deleted too: ${JSON.stringify(workouts.map((w) => w.id))} dialog=${asked}`)
   assert.ok(routines.some((r) => r.id === 'r-mon'), 'other routines untouched')
 })
 
