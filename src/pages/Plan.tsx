@@ -167,6 +167,27 @@ function RoutineCard({
     if (!error) onChanged()
   }
 
+  async function deletePermanently() {
+    const found = await supabase.from('workouts').select('id').eq('routine_id', routine.id)
+    if (found.error) {
+      onError(found.error.message)
+      return
+    }
+    const n = (found.data ?? []).length
+    const logged = n > 0 ? `This also deletes its ${n} logged workout${n === 1 ? '' : 's'}, with all their sets and notes.` : 'It has no logged workouts.'
+    if (!window.confirm(`Permanently delete "${routine.name}"? ${logged} This cannot be undone.`)) return
+    if (n > 0) {
+      const w = await supabase.from('workouts').delete().eq('routine_id', routine.id)
+      if (w.error) {
+        onError(w.error.message)
+        return
+      }
+    }
+    const { error } = await supabase.from('routines').delete().eq('id', routine.id)
+    onError(error ? error.message : null)
+    if (!error) onChanged()
+  }
+
   async function removeSlot(s: RoutineSlot) {
     if (!window.confirm(`Remove ${exName(s.exercise_id)} from this routine? Logged history is kept.`)) return
     const { error } = await supabase.from('routine_slots').delete().eq('id', s.id)
@@ -227,6 +248,7 @@ function RoutineCard({
         <div className="row" style={{ marginTop: 8 }}>
           <button className="small" onClick={() => setEditing((v) => !v)}>{editing ? 'Close' : 'Edit'}</button>
           <button className="small" onClick={() => void toggleArchive()}>{routine.archived ? 'Unarchive' : 'Archive'}</button>
+          {routine.archived && <button className="small danger" onClick={() => void deletePermanently()}>Permanently delete</button>}
         </div>
       )}
       {open && routine.notes && <p className="muted small">{routine.notes}</p>}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import HistoryStrip from '../components/HistoryStrip'
 import SwapFields from '../components/SwapFields'
 import LineChart from '../components/LineChart'
@@ -14,6 +14,7 @@ import type { HistorySet } from '../lib/history'
 
 export default function ExerciseDetail() {
   const { exerciseId } = useParams()
+  const nav = useNavigate()
   const [exercise, setExercise] = useState<Exercise | null>(null)
   const [rows, setRows] = useState<HistorySet[]>([])
   const [notes, setNotes] = useState<Record<string, string>>({})
@@ -108,6 +109,37 @@ export default function ExerciseDetail() {
     else void load()
   }
 
+  async function deletePermanently() {
+    if (!exercise) return
+    const used = await supabase.from('routine_slots').select('routine_id').eq('exercise_id', exercise.id)
+    if (used.error) {
+      setError(used.error.message)
+      return
+    }
+    if ((used.data ?? []).length > 0) {
+      setError('This exercise is still in a routine. Remove it from your routines in Plan first (archived routines count).')
+      return
+    }
+    const logged = await supabase.from('sets').select('id').eq('exercise_id', exercise.id)
+    if (logged.error) {
+      setError(logged.error.message)
+      return
+    }
+    const n = (logged.data ?? []).length
+    const detail = n > 0 ? `This also deletes its ${n} logged set${n === 1 ? '' : 's'} and any notes.` : 'It has no logged sets.'
+    if (!window.confirm(`Permanently delete ${exercise.name}? ${detail} This cannot be undone.`)) return
+    if (n > 0) {
+      const d = await supabase.from('sets').delete().eq('exercise_id', exercise.id)
+      if (d.error) {
+        setError(d.error.message)
+        return
+      }
+    }
+    const { error } = await supabase.from('exercises').delete().eq('id', exercise.id)
+    if (error) setError(error.message)
+    else nav('/exercises')
+  }
+
   if (loading) return <p className="muted">Loading…</p>
   if (!exercise) return <div><p className="error">{error}</p><Link to="/exercises">Back</Link></div>
 
@@ -158,6 +190,7 @@ export default function ExerciseDetail() {
           <div className="row">
             <button className="primary grow" disabled={!name.trim()} onClick={() => void save()}>Save</button>
             <button onClick={() => void toggleArchive()}>{exercise.archived ? 'Unarchive' : 'Archive'}</button>
+            {exercise.archived && <button className="danger" onClick={() => void deletePermanently()}>Permanently delete</button>}
           </div>
         </div>
       )}

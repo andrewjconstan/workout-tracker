@@ -417,6 +417,23 @@ await step('quick workout starts without a routine and hides its routine from Pl
   assert.equal(await page.getByText('Quick workout').count(), 0, 'quick routine hidden in Plan')
 })
 
+await step('an archived routine can be permanently deleted with its logged workouts', async () => {
+  routines.push({ id: 'r-old', name: 'Old test routine', day_of_week: null, notes: null, sort_order: 50, archived: true })
+  workouts.push({ id: 'w-old', routine_id: 'r-old', performed_on: '2026-10-01', location: 'office', status: 'completed', notes: null, created_at: '2026-10-01T10:00:00Z', completed_at: '2026-10-01T10:30:00Z' })
+  await page.getByRole('link', { name: 'More' }).click()
+  await page.getByRole('link', { name: 'Plan' }).click()
+  await page.getByText('Push focus').first().waitFor()
+  await page.getByLabel(/Show archived routines/).check()
+  await page.getByText('Old test routine (archived)').click()
+  let asked = ''
+  page.once('dialog', (d) => { asked = d.message(); void d.accept() })
+  await page.getByRole('button', { name: 'Permanently delete' }).click()
+  await eventually(async () => !routines.some((r) => r.id === 'r-old'), 'routine deleted')
+  assert.ok(asked.includes('1 logged workout'), `confirmation mentions the workout: ${asked}`)
+  assert.ok(!workouts.some((w) => w.id === 'w-old'), 'its workout deleted too')
+  assert.ok(routines.some((r) => r.id === 'r-mon'), 'other routines untouched')
+})
+
 await step('no runtime errors in the browser', async () => {
   assert.deepEqual(pageErrors, [])
 })
