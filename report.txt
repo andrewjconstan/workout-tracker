@@ -1,0 +1,262 @@
+branch: main  sha: c44af82220b64e11fed6108b657559fee030d147
+## install
+
+added 86 packages in 2s
+exit: 0
+## dependency audit (informational)
+# npm audit report
+
+react-router  6.0.0 - 7.17.0
+Severity: moderate
+React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass) - https://github.com/advisories/GHSA-wrjc-x8rr-h8h6
+React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration - https://github.com/advisories/GHSA-337j-9hxr-rhxg
+fix available via `npm audit fix --force`
+Will install react-router-dom@7.18.5, which is a breaking change
+node_modules/react-router
+  react-router-dom  6.0.0-alpha.0 - 7.17.0
+  Depends on vulnerable versions of react-router
+  node_modules/react-router-dom
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+exit: 1
+## typecheck
+exit: 0
+## test
+
+> workout-tracker@0.1.0 test
+> tsx --test src/lib/*.test.ts
+
+TAP version 13
+# Subtest: escapes commas, quotes and newlines
+ok 1 - escapes commas, quotes and newlines
+  ---
+  duration_ms: 1.371801
+  type: 'test'
+  ...
+# Subtest: builds rows
+ok 2 - builds rows
+  ---
+  duration_ms: 0.230761
+  type: 'test'
+  ...
+# Subtest: neutralizes spreadsheet formulas in text cells but leaves numbers alone
+ok 3 - neutralizes spreadsheet formulas in text cells but leaves numbers alone
+  ---
+  duration_ms: 0.200464
+  type: 'test'
+  ...
+# Subtest: local date uses local calendar fields, not UTC
+ok 4 - local date uses local calendar fields, not UTC
+  ---
+  duration_ms: 1.555615
+  type: 'test'
+  ...
+# Subtest: Monday-first weekday numbers
+ok 5 - Monday-first weekday numbers
+  ---
+  duration_ms: 0.205584
+  type: 'test'
+  ...
+# Subtest: date formatting does not shift by time zone
+ok 6 - date formatting does not shift by time zone
+  ---
+  duration_ms: 0.28404
+  type: 'test'
+  ...
+# Subtest: weighted needs weight and whole-number reps
+ok 7 - weighted needs weight and whole-number reps
+  ---
+  duration_ms: 1.573598
+  type: 'test'
+  ...
+# Subtest: reps-only ignores weight and marker
+ok 8 - reps-only ignores weight and marker
+  ---
+  duration_ms: 0.209261
+  type: 'test'
+  ...
+# Subtest: band keeps a free-text marker, blank becomes null
+ok 9 - band keeps a free-text marker, blank becomes null
+  ---
+  duration_ms: 0.213068
+  type: 'test'
+  ...
+# Subtest: sessions are newest first and sets are ordered
+ok 10 - sessions are newest first and sets are ordered
+  ---
+  duration_ms: 1.725201
+  type: 'test'
+  ...
+# Subtest: limit, exclusion, block and location filters
+ok 11 - limit, exclusion, block and location filters
+  ---
+  duration_ms: 0.391461
+  type: 'test'
+  ...
+# Subtest: same date ties break by most recently logged
+ok 12 - same date ties break by most recently logged
+  ---
+  duration_ms: 0.185797
+  type: 'test'
+  ...
+# Subtest: set formatting by exercise kind
+ok 13 - set formatting by exercise kind
+  ---
+  duration_ms: 0.212247
+  type: 'test'
+  ...
+# Subtest: session totals
+ok 14 - session totals
+  ---
+  duration_ms: 0.272419
+  type: 'test'
+  ...
+# Subtest: weight suggestion prefers the same set number from the last session
+ok 15 - weight suggestion prefers the same set number from the last session
+  ---
+  duration_ms: 0.212026
+  type: 'test'
+  ...
+# Subtest: alternating quick workout: pairs of exercises
+ok 16 - alternating quick workout: pairs of exercises
+  ---
+  duration_ms: 2.183286
+  type: 'test'
+  ...
+# Subtest: alternating with four exercises pairs 1+2 and 3+4
+ok 17 - alternating with four exercises pairs 1+2 and 3+4
+  ---
+  duration_ms: 0.342149
+  type: 'test'
+  ...
+# Subtest: alternating with an odd count leaves the last exercise alone at the end
+ok 18 - alternating with an odd count leaves the last exercise alone at the end
+  ---
+  duration_ms: 0.340676
+  type: 'test'
+  ...
+# Subtest: straight sets quick workout: one group per exercise
+ok 19 - straight sets quick workout: one group per exercise
+  ---
+  duration_ms: 0.339003
+  type: 'test'
+  ...
+# Subtest: supersets alternate exercises round by round
+ok 20 - supersets alternate exercises round by round
+  ---
+  duration_ms: 2.483467
+  type: 'test'
+  ...
+# Subtest: groups run in order
+ok 21 - groups run in order
+  ---
+  duration_ms: 0.4604
+  type: 'test'
+  ...
+# Subtest: location variants: only the matching fly appears
+ok 22 - location variants: only the matching fly appears
+  ---
+  duration_ms: 0.412029
+  type: 'test'
+  ...
+# Subtest: added rounds extend a group
+ok 23 - added rounds extend a group
+  ---
+  duration_ms: 0.277137
+  type: 'test'
+  ...
+# Subtest: finishers are not steps but are listed separately
+ok 24 - finishers are not steps but are listed separately
+  ---
+  duration_ms: 0.328153
+  type: 'test'
+  ...
+# Subtest: substitution overrides the exercise for one slot
+ok 25 - substitution overrides the exercise for one slot
+  ---
+  duration_ms: 0.217907
+  type: 'test'
+  ...
+# Subtest: current index skips done and skipped steps
+ok 26 - current index skips done and skipped steps
+  ---
+  duration_ms: 0.335667
+  type: 'test'
+  ...
+# Subtest: swap suggestions: same group, not itself, not archived, sorted by name
+ok 27 - swap suggestions: same group, not itself, not archived, sorted by name
+  ---
+  duration_ms: 8.564211
+  type: 'test'
+  ...
+# Subtest: swap suggestions respect location
+ok 28 - swap suggestions respect location
+  ---
+  duration_ms: 0.194674
+  type: 'test'
+  ...
+# Subtest: swap suggestions are empty without a group
+ok 29 - swap suggestions are empty without a group
+  ---
+  duration_ms: 0.142817
+  type: 'test'
+  ...
+# Subtest: swap groups are distinct (ignoring case) and sorted
+ok 30 - swap groups are distinct (ignoring case) and sorted
+  ---
+  duration_ms: 0.183302
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 756.781126
+exit: 0
+## build
+
+> workout-tracker@0.1.0 build
+> tsc --noEmit && vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 105 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                 [39m[1m[2m  1.29 kB[22m[1m[22m[2m │ gzip:   0.56 kB[22m
+[2mdist/[22m[2massets/[22m[35mindex-CIj1XZUB.css  [39m[1m[2m  6.54 kB[22m[1m[22m[2m │ gzip:   2.01 kB[22m
+[2mdist/[22m[2massets/[22m[36mindex-CfHfb898.js   [39m[1m[2m460.99 kB[22m[1m[22m[2m │ gzip: 131.44 kB[22m
+[32m✓ built in 1.94s[39m
+exit: 0
+## browser smoke test
+
+added 2 packages in 2s
+PASS home shows routines
+PASS start a home workout and see history for the first exercise
+PASS typing reps and pressing Next advances to the superset partner
+PASS second exercise, then round 2 of the first
+PASS skip moves on without saving
+PASS swap exercise for this workout only
+PASS home variant shows the band fly, not the cable fly
+PASS sets entered during an outage are queued, then sync
+PASS finish the workout
+PASS history by routine lists dates and sets, with location filter
+PASS exercise detail shows sessions and charts
+PASS plan editor renders slots with location badges
+PASS archiving a routine asks for confirmation
+PASS load starter plan does nothing when routines exist
+PASS theme can be forced dark and back to auto
+PASS rest reminders can be switched off in More
+PASS quick workout starts without a routine and hides its routine from Plan
+PASS an archived routine can be permanently deleted with its logged workouts
+PASS no runtime errors in the browser
+
+All smoke steps passed.
+exit: 0
