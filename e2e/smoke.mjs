@@ -11,9 +11,11 @@ const OUT = process.env.SHOT_DIR ?? 'shots'
 fs.mkdirSync(OUT, { recursive: true })
 
 // ---------- mock database ----------
-const ex = (id, name, kind, load_note = null, reps_note = null, swap_group = null, only_at = null) => ({ id, name, kind, load_note, reps_note, archived: false, swap_group, only_at })
+const ex = (id, name, kind, load_note = null, reps_note = null, swap_group = null, only_at = null) => ({ id, name, kind, load_note, reps_note, archived: false, swap_group, only_at, guide: null, animation: null, setup_note: null })
 const exercises = [
-  ex('e-incline', 'Incline Dumbbell Press', 'weighted', 'per hand', null, 'chest'),
+  { ...ex('e-incline', 'Incline Dumbbell Press', 'weighted', 'per hand', null, 'chest'),
+    guide: { summary: 'Demo guide.', setup: ['Set the bench to a low incline.'], how: ['Press up.', 'Lower slowly.'], focus: ['Elbows under wrists.'] },
+    animation: 'cable-overhead-tricep-bar' },
   ex('e-lunge', 'Dumbbell Weighted Lunge', 'weighted', 'per hand', 'per leg', 'glutes & legs'),
   ex('e-bridge', 'Dumbbell Glute Bridge', 'weighted', 'one dumbbell', null, 'glutes & legs', 'home'),
   ex('e-sumo', 'Dumbbell Sumo Goblet Squat', 'weighted', 'one dumbbell', null, 'glutes & legs'),
@@ -271,6 +273,29 @@ await step('start a home workout and see history for the first exercise', async 
     'cursor in the reps field when weight is pre-filled',
   )
   await shot('02-log-first-step')
+})
+
+await step('exercise guide opens over the workout and closes without losing typed values', async () => {
+  await repsInput().fill('7')
+  await page.getByRole('button', { name: 'How to do this exercise' }).click()
+  const dialog = page.getByRole('dialog', { name: /Incline Dumbbell Press guide/ })
+  await dialog.waitFor()
+  await dialog.getByText('Set the bench to a low incline.').waitFor()
+  await dialog.getByRole('button', { name: 'Frame 3' }).click()
+  await dialog.getByText('Frame 3 of 6').waitFor()
+  await shot('10-guide-sheet')
+  await page.keyboard.press('Escape')
+  await dialog.waitFor({ state: 'detached' })
+  assert.equal(await repsInput().inputValue(), '7', 'typed reps kept')
+  await page.getByRole('button', { name: 'How to do this exercise' }).click()
+  await dialog.waitFor()
+  await page.getByTestId('guide-backdrop').click({ position: { x: 10, y: 10 } })
+  await dialog.waitFor({ state: 'detached' })
+  await page.getByRole('button', { name: 'How to do this exercise' }).click()
+  await page.getByRole('button', { name: 'Close guide' }).click()
+  await dialog.waitFor({ state: 'detached' })
+  await exName().filter({ hasText: 'Incline Dumbbell Press' }).waitFor()
+  await repsInput().fill('')
 })
 
 await step('typing reps and pressing Next advances to the superset partner', async () => {
