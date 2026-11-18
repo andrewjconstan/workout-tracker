@@ -13,6 +13,20 @@ export interface Exercise {
   swap_group: string | null
   /** Limits suggestions to one location (e.g. a cable fly only makes sense at the office). */
   only_at: Location | null
+  /** How-to content shown in the guide sheet while logging. */
+  guide: Guide | null
+  /** Key of a drawn animation (see components/ExerciseAnimation). */
+  animation: string | null
+  /** The person's own machine settings for this exercise. */
+  setup_note: string | null
+}
+
+export interface Guide {
+  summary?: string
+  setup?: string[]
+  how?: string[]
+  focus?: string[]
+  avoid?: string[]
 }
 
 export interface Routine {

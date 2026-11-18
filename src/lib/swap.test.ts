@@ -4,7 +4,7 @@ import { suggestSwaps, swapGroups } from './swap'
 import type { Exercise } from './types'
 
 const ex = (id: string, name: string, swap_group: string | null, only_at: Exercise['only_at'] = null, archived = false): Exercise => ({
-  id, name, kind: 'weighted', load_note: null, reps_note: null, archived, swap_group, only_at,
+  id, name, kind: 'weighted', load_note: null, reps_note: null, archived, swap_group, only_at, guide: null, animation: null, setup_note: null,
 })
 
 const all = [

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import GuideSheet from '../components/GuideSheet'
 import HistoryStrip from '../components/HistoryStrip'
 import { formatDate } from '../lib/dates'
 import { parseEntry } from '../lib/entry'
@@ -50,6 +51,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
   const [reps, setReps] = useState('')
   const [marker, setMarker] = useState('')
   const [showSwap, setShowSwap] = useState(false)
+  const [guideId, setGuideId] = useState<string | null>(null)
   const [showFinisher, setShowFinisher] = useState(false)
   const [showFinish, setShowFinish] = useState(false)
   const [sessionNote, setSessionNote] = useState('')
@@ -482,7 +484,10 @@ function LogInner({ workoutId }: { workoutId: string }) {
             ))}
           </div>
 
-          <div className={`exercise-name${exercise.name.length > 26 ? ' long' : ''}`}>{exercise.name}</div>
+          <div className="name-row">
+            <div className={`exercise-name${exercise.name.length > 26 ? ' long' : ''}`}>{exercise.name}</div>
+            {exercise.guide && <GuideButton onOpen={() => setGuideId(exercise.id)} />}
+          </div>
           {(step.slot.note || focusKey) && (
             <p className="target">
               {[step.slot.note, focusKey ? 'editing' : null].filter(Boolean).join(' · ')}
@@ -606,6 +611,7 @@ function LogInner({ workoutId }: { workoutId: string }) {
             return (
               <FinisherCard
                 key={slot.id}
+                onGuide={() => setGuideId(id)}
                 exercise={ex}
                 sets={sets.filter((s) => s.exercise_id === id && s.block === 'finisher')}
                 history={history.filter((h) => h.exercise_id === id)}
@@ -670,11 +676,35 @@ function LogInner({ workoutId }: { workoutId: string }) {
           <button className="link danger" onClick={() => void discard()}>Discard workout</button>
         </div>
       </div>
+
+      {guideId && exercises.get(guideId) && (
+        <GuideSheet
+          exercise={exercises.get(guideId)!}
+          onClose={() => setGuideId(null)}
+          onSetupSaved={(id, text) =>
+            setExercises((prev) => {
+              const next = new Map(prev)
+              const cur = next.get(id)
+              if (cur) next.set(id, { ...cur, setup_note: text })
+              return next
+            })
+          }
+        />
+      )}
     </div>
   )
 }
 
+function GuideButton({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button type="button" className="guide-btn" aria-label="How to do this exercise" onClick={onOpen}>
+      ?
+    </button>
+  )
+}
+
 function FinisherCard({
+  onGuide,
   exercise,
   sets,
   history,
@@ -687,6 +717,7 @@ function FinisherCard({
   onNeedHistory,
   stripCount,
 }: {
+  onGuide: () => void
   exercise: Exercise
   sets: SetRow[]
   history: HistorySet[]
@@ -737,7 +768,10 @@ function FinisherCard({
 
   return (
     <div className="card">
-      <div className="exercise-name">{exercise.name}</div>
+      <div className="name-row">
+        <div className="exercise-name">{exercise.name}</div>
+        {exercise.guide && <GuideButton onOpen={onGuide} />}
+      </div>
 
       {sorted.map((s) => (
         <div key={s.id} className="setline">
