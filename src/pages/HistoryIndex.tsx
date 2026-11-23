@@ -27,6 +27,7 @@ export default function HistoryIndex() {
             .select('routine_id, performed_on')
             .eq('status', 'completed')
             .order('performed_on', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(from, to),
         )
         const s: Record<string, Summary> = {}

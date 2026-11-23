@@ -27,6 +27,7 @@ export default function RoutineHistory() {
           .select('*, sets(*, exercises(id, name, kind))')
           .eq('routine_id', routineId)
           .order('performed_on', { ascending: false })
+          .order('created_at', { ascending: false })
           .order('created_at', { ascending: false }),
       ])
       if (r.error || w.error) setError((r.error ?? w.error)!.message)

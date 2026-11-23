@@ -25,7 +25,7 @@ export default function Home() {
     const [r, a, c, ar] = await Promise.all([
       supabase.from('routines').select('*').eq('archived', false).order('sort_order'),
       supabase.from('workouts').select('*, routines(name)').eq('status', 'in_progress').order('created_at', { ascending: false }),
-      supabase.from('workouts').select('*, routines(name)').eq('status', 'completed').order('performed_on', { ascending: false }).limit(5),
+      supabase.from('workouts').select('*, routines(name)').eq('status', 'completed').order('performed_on', { ascending: false }).order('created_at', { ascending: false }).limit(5),
       supabase.from('routines').select('id', { count: 'exact', head: true }).eq('archived', true).neq('name', QUICK_ROUTINE_NAME),
     ])
     setArchivedCount(ar.count ?? 0)
